@@ -40,7 +40,7 @@ const QrScannerScreen = () => {
 
       <div className="mt-6 bg-white shadow-lg p-4 rounded-lg">
         <QrScanner
-          facingMode="environment"
+          facingMode={"rear"}
           delay={300}
           onError={handleError}
           onScan={handleScan}
