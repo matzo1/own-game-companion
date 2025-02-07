@@ -60,7 +60,33 @@ export default defineConfig({
         related_applications: [],
         scope: "/",
         lang: "es-AR"
+      },
+      workbox: {
+        globPatterns: [
+          '**/*.{js,css,html,ico,png,svg,jpg,jpeg,mp4,webm}'
+        ],
+        runtimeCaching: [
+          {
+            urlPattern: /^\/contenido\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'content-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 días
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          }
+        ]
       }
     })
   ],
+  base: './', // Esto es importante para PWA
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+  }
 })

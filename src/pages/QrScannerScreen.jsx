@@ -1,7 +1,9 @@
+// escaner
 import QrScanner from "react-qr-scanner";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchContent } from '../services/api';
+import { fetchMediaById, handleMediaError } from '../services/mediaService';
 
 const QrScannerScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,22 +12,17 @@ const QrScannerScreen = () => {
 
   const handleScan = async (data) => {
     if (data && !isLoading) {
-        console.log(data);
+      console.log(data);
       setIsLoading(true);
       setFetchError(null);
-
+  
       try {
-        const qrId = data.text; // Asume que el QR contiene un ID
-        const response = await fetchContent(qrId);
-        console.log('response', response);
-        if (!response.ok) {
-          throw new Error('Error en la solicitud');
-        }
-
-        const result = await response.json();
-        navigate('/resultado', { state: { result } });
+        const qrId = data.text;
+        const mediaContent = await fetchMediaById(qrId);
+        navigate('/resultado', { state: { content: mediaContent } });
       } catch (error) {
-        setFetchError(error.message || 'Error al procesar el código QR');
+        const errorInfo = handleMediaError(error);
+        setFetchError(errorInfo.message);
       } finally {
         setIsLoading(false);
       }
@@ -37,12 +34,13 @@ const QrScannerScreen = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 p-4">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-200 p-4">
       <h1 className="text-2xl font-bold text-gray-800">Escáner QR</h1>
       <p className="text-gray-600 mt-2">Escanea un código QR para obtener la información.</p>
 
       <div className="mt-6 bg-white shadow-lg p-4 rounded-lg">
         <QrScanner
+          facingMode="environment"
           delay={300}
           onError={handleError}
           onScan={handleScan}

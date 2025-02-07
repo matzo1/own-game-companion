@@ -1,18 +1,30 @@
-const API_BASE_URL = 'http://localhost:5173/api';
+// services/api.js
+import { CONTENT_CONFIG } from '../config/storage';
 
-export const fetchContent = async (contentId) => {
+export const fetchContent = async (qrId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/contenido/${contentId}`);
+    // Si usas archivos locales
+    const response = await fetch(`${CONTENT_CONFIG.BASE_URL}/contenido/${qrId}`);
+    
+    // O si tienes un backend
+    // const response = await fetch(`/api/contenido/${qrId}`);
     
     if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Content not found');
-      }
-      throw new Error('Failed to fetch content');
+      throw new Error('Contenido no encontrado');
     }
-
-    return await response.json();
+    
+    return response;
   } catch (error) {
-    throw new Error(error.message || 'Network error');
+    console.error('Error fetching content:', error);
+    throw error;
   }
+};
+
+// Función helper para determinar el tipo de contenido
+export const getContentType = (filename) => {
+  const extension = filename.split('.').pop().toLowerCase();
+  
+  if (CONTENT_CONFIG.TYPES.IMAGE.includes(extension)) return 'image';
+  if (CONTENT_CONFIG.TYPES.VIDEO.includes(extension)) return 'video';
+  return 'unknown';
 };

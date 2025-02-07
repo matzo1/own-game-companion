@@ -1,3 +1,4 @@
+//service-worker.js
 const CACHE_NAME = 'own-cache-v1';
 const CONTENT_CACHE = 'own-content-cache-v1';
 
@@ -8,6 +9,8 @@ const APP_SHELL = [
   '/manifest.json',
   '/static/js/main.bundle.js',
   '/static/css/main.css',
+  '/assets/contenido/images/*',
+  '/assets/contenido/videos/*'
 ];
 
 // Instalación del Service Worker
@@ -70,7 +73,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
   // Manejar peticiones a la API
-  if (url.pathname.startsWith('/api/contenido/')) {
+  if (url.pathname.startsWith('/assets/contenido/')) {
     event.respondWith(
       caches.open(CONTENT_CACHE).then((cache) => {
         return cache.match(event.request).then((response) => {
